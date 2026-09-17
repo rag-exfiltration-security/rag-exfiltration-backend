@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        Nota de versiones: Spring Boot 3.3.13 y LangChain4j 1.6.0 (con el modulo
+        pgvector y el de embeddings en 1.6.0-beta12). Estas versiones exactas
+        ya se probaron con "mvn spring-boot:run" contra Maven Central real: el
+        primer intento fallo por 3 errores de compilacion (ChatLanguageModel ya
+        no existe en 1.6.0, DocumentSplitters vive en el artefacto
+        "langchain4j" y no en "langchain4j-core", y un problema de inferencia
+        de tipos en ChatController), ya corregidos en este pom y en el codigo.
+        Ese ciclo real de prueba y correccion no se pudo repetir una segunda
+        vez en el entorno donde se escribio esto (sin salida a Maven Central),
+        asi que sigue pendiente confirmar que con estos cambios el build ya
+        pasa completo.
+    -->
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.13</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>edu.eci</groupId>
+    <artifactId>rag-exfiltration-backend</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <name>rag-exfiltration-backend</name>
+    <description>
+        Avance 1: pipeline RAG basico sin filtrado, para demostrar exfiltracion de
+        informacion mediante consulta directa, reformulacion evasiva e inyeccion de
+        instrucciones. Proyecto academico, curso Fundamentos de Seguridad de la
+        Informacion, Escuela Colombiana de Ingenieria Julio Garavito.
+    </description>
+
+    <properties>
+        <java.version>21</java.version>
+        <langchain4j.version>1.6.0</langchain4j.version>
+        <langchain4j.beta.version>1.6.0-beta12</langchain4j.beta.version>
+    </properties>
+
+    <dependencies>
+        <!-- Web y API -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- LangChain4j: nucleo (interfaces y abstracciones: ChatModel, EmbeddingModel, etc) -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-core</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
+        <!--
+            LangChain4j: modulo principal, con las utilidades de mas alto
+            nivel que se construyen sobre langchain4j-core. DocumentSplitters
+            (usado en CorpusIngestionRunner) vive aqui, no en el core.
+        -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
+        <!-- LangChain4j: LLM generador. Ollama corre local y es gratuito, sin API key -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-ollama</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
+
+        <!-- LangChain4j: vector store en Postgres con pgvector, gratuito y open source -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-pgvector</artifactId>
+            <version>${langchain4j.beta.version}</version>
+        </dependency>
+
+        <!--
+            LangChain4j: modelo de embeddings all-MiniLM-L6-v2, corre en proceso via
+            ONNX, sin llamadas externas y sin costo. Genera vectores de 384 dimensiones.
+        -->
+        <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
+            <version>${langchain4j.beta.version}</version>
+        </dependency>
+
+        <!-- Pruebas -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

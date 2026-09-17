@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: rag-exfiltration-backend
+
+server:
+  port: 8080
+
+# --- LLM generador (Ollama, local y gratuito) ---
+rag:
+  ollama:
+    base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+    model-name: ${OLLAMA_MODEL:llama3.2}
+
+  # --- Vector store (Postgres + pgvector, local y gratuito) ---
+  vectorstore:
+    host: ${PGVECTOR_HOST:localhost}
+    port: ${PGVECTOR_PORT:5432}
+    database: ${PGVECTOR_DATABASE:rag_exfiltration}
+    user: ${PGVECTOR_USER:rag_user}
+    password: ${PGVECTOR_PASSWORD:rag_password}
+    table: ${PGVECTOR_TABLE:corpus_embeddings}
+    dimension: 384 # dimension fija del modelo all-MiniLM-L6-v2
+    # true = en cada arranque se borra y se recrea la tabla, para que cada
+    # demo del Avance 1 parta de un corpus limpio. Poner en false cuando ya
+    # no se quiera reingestar el corpus en cada reinicio.
+    drop-on-start: ${PGVECTOR_DROP_ON_START:true}
+
+  # --- Corpus de prueba ---
+  corpus:
+    path: ${RAG_CORPUS_PATH:corpus}
+    ingest-on-start: ${RAG_CORPUS_INGEST_ON_START:true}
+
+  # --- Recuperacion (sin filtrado en el Avance 1) ---
+  retrieval:
+    top-k: ${RAG_TOP_K:4}
+    min-score: ${RAG_MIN_SCORE:0.0}
+
+  # --- Auditoria de cada interaccion (evidencias del avance) ---
+  audit:
+    log-file: ${RAG_AUDIT_LOG_FILE:evidencias/fase-A/query-log.jsonl}
+
+logging:
+  level:
+    edu.eci.rag: INFO
