@@ -28,6 +28,7 @@
 - [Metodología y fases del proyecto](#-metodología-y-fases-del-proyecto)
 - [Cómo ejecutar el backend](#-cómo-ejecutar-el-backend)
 - [Declaración de uso de IA](#-declaración-de-uso-de-ia)
+- [Análisis de costos y riesgos económicos](#-análisis-de-costos-y-riesgos-económicos)
 - [Referencias](#-referencias)
 - [Conclusiones](#-conclusiones)
 
@@ -80,11 +81,12 @@ El sistema se organiza en tres zonas con niveles de confianza distintos: el clie
 | Componente | Tecnología | Repositorio | Despliegue |
 |---|---|---|---|
 | Frontend del chat | Next.js | `rag-exfiltration-frontend` | Vercel |
-| Backend y API | Java 21 con Spring Boot | `rag-exfiltration-backend`, este repo | Render o Railway |
-| Orquestación RAG | LangChain4j | este repo | No aplica |
-| Vector store | Chroma o pgvector | este repo | Render o Railway |
+| Backend y API | Java 21 con Spring Boot 3.3.13 | `rag-exfiltration-backend`, este repo | Render o Railway |
+| Orquestación RAG | LangChain4j 1.6.x | este repo | No aplica |
+| Vector store | PostgreSQL + pgvector, open source | este repo | Render o Railway |
+| Embeddings | Modelo `all-MiniLM-L6-v2` | este repo | No aplica |
 | Corpus documental | 4 niveles de clasificación | este repo, carpeta `corpus/` | No aplica |
-| LLM generador | API de Claude o GPT | No aplica | Servicio de terceros |
+| LLM generador | Ollama local, modelo Llama 3.2 | este repo | Local, sin servicio de terceros |
 
 ### Qué hace cada pieza
 
@@ -92,11 +94,11 @@ El sistema se organiza en tres zonas con niveles de confianza distintos: el clie
 
 **Backend y API con Spring Boot y LangChain4j.** Es el punto donde se concentra toda la seguridad del sistema. Recibe la consulta junto con la identidad y el rol del usuario, genera el embedding, consulta el almacén vectorial, arma el prompt y llama al LLM. Es el único componente que conoce simultáneamente la identidad del usuario y el contenido de los fragmentos recuperados, y por eso es el único lugar donde tiene sentido decidir qué puede salir hacia el modelo. Las tres capas de defensa del proyecto se implementan aquí: filtrado en la recuperación, refuerzo del mensaje del sistema y validación de la respuesta.
 
-**Vector store con Chroma o pgvector.** Guarda las incrustaciones de cada fragmento del corpus junto con sus metadatos: nivel de clasificación, roles autorizados y, cuando la restricción es individual, la lista de usuarios permitidos. Esos metadatos son lo que hace posible el filtrado del Avance 2. Sin ellos, la búsqueda sólo puede ordenar por similitud semántica y no tiene forma de saber quién pregunta.
+**Vector store con PostgreSQL y pgvector.** Guarda las incrustaciones de cada fragmento del corpus junto con sus metadatos: nivel de clasificación, roles autorizados y, cuando la restricción es individual, la lista de usuarios permitidos. Esos metadatos son lo que hace posible el filtrado del Avance 2. Sin ellos, la búsqueda sólo puede ordenar por similitud semántica y no tiene forma de saber quién pregunta.
 
 **Corpus documental.** Archivos de prueba etiquetados en cuatro niveles equivalentes a los que sugiere ISO/IEC 27001: público, interno, confidencial y secreto. Cada documento se asocia además a roles como recursos humanos, finanzas o gerencia. Es material sintético creado para el proyecto y no contiene información real de ninguna organización.
 
-**LLM generador expuesto como API externa.** Redacta la respuesta final a partir de los fragmentos que le entrega el backend. Está fuera de la infraestructura propia, lo que implica dos cosas. Todo fragmento que se le envíe sale del perímetro del proyecto, y ningún control aplicado sobre él es verificable por el equipo. De ahí la regla de diseño principal del sistema: un fragmento no autorizado nunca debe llegar al prompt, porque una vez enviado ya no hay control posible sobre él.
+**LLM generador con Ollama, ejecutado localmente.** Redacta la respuesta final a partir de los fragmentos que le entrega el backend, corriendo el modelo Llama 3.2 en la propia infraestructura del proyecto en lugar de un servicio de terceros. Esto reduce el riesgo de exposición de credenciales de API y de que un fragmento salga fuera del perímetro controlado, aunque el resto de la regla de diseño principal del sistema se mantiene igual: un fragmento no autorizado nunca debe llegar al prompt, porque una vez enviado al modelo ya no hay control posible sobre él.
 
 ### Decisiones de diseño relevantes para la seguridad
 
@@ -145,7 +147,7 @@ Los dos primeros se neutralizan en la etapa de recuperación durante el Avance 2
 
 ### Límite de confianza 2: del backend hacia el LLM externo
 
-El prompt y el contexto recuperado salen de la infraestructura propia hacia un servicio de terceros. Este cruce es irreversible. Una vez enviado un fragmento, el equipo pierde toda capacidad de control sobre él, y ningún filtro posterior lo recupera. Esto define la regla de diseño ya mencionada, según la cual sólo cruza esta frontera lo que el usuario ya está autorizado a ver, y explica por qué el control principal se aplica en la recuperación y no en la salida.
+El prompt y el contexto recuperado se procesan con el modelo servido por Ollama en la infraestructura propia del proyecto. Aun así, la regla de diseño se mantiene igual de estricta: sólo debe llegar al prompt lo que el usuario ya está autorizado a ver, porque una vez que el modelo recibe un fragmento ya no hay control posterior posible sobre lo que hace con él.
 
 ### Riesgos que no cruzan ninguna frontera
 
@@ -161,10 +163,11 @@ Ambos confirman que el filtrado en la recuperación protege la interfaz conversa
 ## ⚙️ Tecnologías
 
 - **Lenguaje:** Java 21
-- **Framework:** Spring Boot
-- **Orquestación RAG:** LangChain4j
-- **Vector store:** Chroma o pgvector
-- **LLM:** API de Claude o GPT
+- **Framework:** Spring Boot 3.3.13
+- **Orquestación RAG:** LangChain4j 1.6.x
+- **Vector store:** PostgreSQL + pgvector, open source
+- **Embeddings:** Modelo `all-MiniLM-L6-v2`
+- **LLM:** Ollama corriendo en local, modelo Llama 3.2
 - **Control de versiones:** Git y GitHub
 - **Despliegue:** Render o Railway
 
@@ -172,8 +175,8 @@ Ambos confirman que el filtrado en la recuperación protege la interfaz conversa
 
 1. El usuario envía una consulta desde el chat del repo `rag-exfiltration-frontend`.
 2. Este backend recibe la consulta junto con el usuario y su rol asignado.
-3. Genera el embedding de la consulta y recupera del vector store los fragmentos más similares del corpus.
-4. Los fragmentos recuperados se envían junto con la consulta al LLM, que redacta la respuesta.
+3. Genera el embedding de la consulta con el modelo `all-MiniLM-L6-v2` y recupera de PostgreSQL/pgvector los fragmentos más similares del corpus.
+4. Los fragmentos recuperados se envían junto con la consulta al LLM servido por Ollama (Llama 3.2), que redacta la respuesta.
 5. La respuesta se devuelve al frontend y toda la interacción queda registrada en logs con el usuario, los fragmentos recuperados y la respuesta.
 6. Sobre este flujo se ejecutan los ataques de prueba definidos en la metodología, para medir cuánta información se filtra según la capa de control de acceso activa en cada avance.
 
@@ -189,7 +192,12 @@ El proyecto se reparte en dos repositorios. Este, `rag-exfiltration-backend`, co
 ├── src/                          # Próximo paso: código fuente del backend
 ├── corpus/                       # Documentos de prueba clasificados
 ├── docs/
-│   ├── marco-teorico/            # Paper base y referencias del proyecto
+│   ├── marco-teorico/             # Paper base y referencias del proyecto
+│   │   └── Exfiltracion_RAG_Marco_Teorico.pdf
+│   ├── estadisticas/              # Informe de evidencia estadística de riesgos RAG/LLM
+│   │   └── RAG_Exfiltration_Riesgos_Informe.docx
+│   ├── cost/                      # Análisis de costos y riesgos económicos
+│   │   └── RAG_Exfiltration_Analisis_Costos_Riesgos.docx
 │   └── diagrams/
 │       ├── da_rag.png            # Diagrama de arquitectura
 │       └── dfd_rag.png           # Diagrama de flujo de datos
@@ -223,9 +231,55 @@ En cumplimiento del compromiso ético del equipo, se deja constancia de que se u
 
 Las evidencias de las pruebas de exfiltración, el código del sistema RAG y los resultados presentados corresponden al trabajo realizado por los integrantes del grupo, desarrollado en entornos controlados y autorizados, tal como se certifica en el marco teórico del proyecto.
 
+## 📊 Evidencia externa: riesgos de exfiltración en sistemas RAG/LLM
+
+Como complemento al marco teórico y al risk register, el equipo elaboró un informe de investigación que reúne evidencia estadística verificable sobre los riesgos de exfiltración de datos en sistemas RAG y LLM, conectando cada hallazgo con los mecanismos que este proyecto demuestra.
+
+> 📎 Informe completo: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx)
+
+**Resumen**
+
+El informe documenta siete problemas de seguridad, cada uno con fuente primaria, metodología, muestra y limitaciones declaradas:
+
+1. **Inyección de instrucciones**, vector #1 de exfiltración en RAG/LLM según OWASP (LLM01:2025). El estudio de Qi et al. (2024, Harvard/CMU/MBZUAI) logró 100% de éxito extrayendo el datastore de 25 GPTs de producción con máximo 2 consultas, y reconstruyó el 41% de un corpus de 77.000 palabras y el 3% de uno de 1.569.000 palabras con 100 consultas.
+2. **La exfiltración escala con el tamaño del corpus y el número de consultas**: los corpus pequeños (como el de 5 documentos usado en las demos de este proyecto) son proporcionalmente más vulnerables.
+3. **Brechas de datos vinculadas a IA generativa**: 13% de las organizaciones sufrió una brecha de sus modelos o aplicaciones de IA; de esas, 97% no tenía controles de acceso adecuados (IBM/Ponemon, 2025).
+4. **Ausencia de gobernanza de IA**: 63% de las organizaciones no tiene política de gobernanza de IA (IBM, 2025).
+5. **Shadow AI**: 81% de los empleados usa herramientas de IA no aprobadas; el porcentaje de datos corporativos sensibles compartidos con IA se triplicó del 10,7% (2023) al 34,8% (2025) (UpGuard/Cyberhaven).
+6. **Control de acceso roto**, categoría #1 del OWASP Top 10 desde 2021, causa raíz transversal que el Avance 1 de este proyecto reproduce deliberadamente al no filtrar por rol ni clasificación.
+7. **Brecha entre adopción y gobernanza**: las organizaciones despliegan IA más rápido de lo que implementan controles; Gartner proyecta que más del 40% de las brechas de IA para 2027 se originará en el uso indebido de GenAI a través de fronteras.
+
+Las cifras centrales del informe (Qi et al. 2024, IBM Cost of a Data Breach 2025 y el comunicado de Gartner) fueron contrastadas directamente contra sus fuentes primarias y se confirmaron como exactas. El propio informe señala con transparencia sus cifras de menor respaldo, como el 69% atribuido a Gartner sobre uso de GenAI no autorizada, verificado solo a través de una fuente secundaria.
+
+## 💰 Análisis de costos y riesgos económicos
+
+Como complemento al risk register, el equipo elaboró un informe técnico que estima el costo económico de los riesgos y de cada componente de la arquitectura a lo largo de los tres avances. Sigue el enfoque de NIST SP 800-30 y calcula la pérdida anualizada esperada como `ALE = SLE × ARO`, donde SLE es el costo de un solo evento y ARO es cuántas veces se espera que ocurra por año.
+
+> 📎 Informe completo: [`docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx`](docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx)
+
+**Resumen**
+
+El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09). Es una base de cálculo académica y no un presupuesto: donde faltan datos reales entrega fórmulas con variables explícitas para que el equipo las complete con sus mediciones.
+
+1. **Aún no hay cifras absolutas.** Ningún riesgo tiene un costo calculado, porque faltan variables que el proyecto todavía no mide: tasa de ocurrencia, valor asignado a cada nivel de clasificación, tiempos de respuesta y política de retención de logs.
+2. **Los riesgos de mayor alcance no están cubiertos por las tres fases.** R-05 (inversión de incrustaciones) compromete el corpus completo y R-09 (logs con información sensible) duplica lo que un ataque logre exfiltrar. Ambos requieren cifrado en reposo, control de acceso a la base de datos, y una política de retención y acceso para los logs.
+3. **El Avance 2 es determinístico y el Avance 3 no.** El filtrado en la recuperación cierra R-01 y R-02. La inyección de instrucciones (R-03) solo se reduce de forma probabilística: en el estudio de Qi et al. (2024) las mitigaciones más efectivas bajan la reconstrucción de 88,9% a 52,3%, por lo que el riesgo residual debe presupuestarse.
+4. **El validador del Avance 3 tiene un costo computacional propio.** Si usa una segunda inferencia del LLM, el cómputo por consulta se duplica aproximadamente.
+5. **Ollama local evita el costo por token, pero implica un costo fijo de infraestructura.** Cuál opción conviene depende del volumen real de consultas.
+
+| Avance | Mitigación directa | Cómputo adicional | Riesgo residual |
+|---|---|---|---|
+| **1. Sin filtrado** | Ninguna | Línea base | Todos los riesgos abiertos |
+| **2. Filtrado en recuperación** | R-01 y R-02 | Marginal | Depende de la tasa de falsos negativos del filtro, aún no medida |
+| **3. Prompt y validación** | R-01 y R-02, con R-03 parcial | Hasta ≈2× | ≈52,3% de reconstrucción según Qi et al., en condiciones distintas a las del proyecto |
+
+El informe también propone las métricas a recopilar durante las pruebas y un flujo de cuatro pasos para convertirlas en costos: calcular el SLE, estimar el ARO con los resultados del Red Team, calcular el ALE y repetir el cálculo tras cada avance para obtener la curva de riesgo residual frente a la inversión en controles.
+
+**Limitaciones declaradas:** el análisis se hizo con los siete riesgos descritos en este README, por lo que queda pendiente una segunda pasada con el contenido de [`risk-register.md`](risk-register.md). Los precios de proveedores (Vercel, Render, Anthropic) corresponden a septiembre de 2026 y deben verificarse antes de usarse en un documento final.
+
 ## 📚 Referencias
 
-Ver la lista completa de referencias en el documento del marco teórico: [`docs/marco-teorico/Exfiltracion_RAG_Marco_Teorico.pdf`](docs/marco-teorico/Exfiltracion_RAG_Marco_Teorico.pdf).
+Ver la lista completa de referencias en el documento del marco teórico: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx).
 
 ## ✅ Conclusiones
 
