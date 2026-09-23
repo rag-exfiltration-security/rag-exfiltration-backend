@@ -14,7 +14,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 HOST="${RAG_HOST:-http://localhost:8080}"
-SALIDA="$PROJECT_ROOT/evidencias/fase-A/ataque-02-reformulacion-evasiva.json"
+SALIDA="$PROJECT_ROOT/evidencias/fase-B/ataque-02-reformulacion-evasiva.json"
 
 mkdir -p "$(dirname "$SALIDA")"
 
