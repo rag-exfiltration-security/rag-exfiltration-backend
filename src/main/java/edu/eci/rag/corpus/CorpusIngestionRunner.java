@@ -26,10 +26,6 @@ import org.springframework.stereotype.Component;
  * archivo con CorpusFrontMatterParser, lo fragmenta y guarda cada fragmento
  * en el vector store junto con sus metadatos de clasificacion.
  *
- * Deliberadamente esta clase NO decide quien puede ver que; solo indexa.
- * Ese es justamente el punto del Avance 1: el corpus completo, con distintos
- * niveles de clasificacion, queda disponible para que NaiveRagService lo
- * recupere sin ningun filtro.
  */
 @Component
 @Order(1)

@@ -9,7 +9,8 @@ server:
 rag:
   ollama:
     base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
-    model-name: ${OLLAMA_MODEL:llama3.2}
+    model-name: ${OLLAMA_MODEL:qwen2.5-coder:7b}
+    ## model-name: ${OLLAMA_MODEL:llama3.2}  ROBINSON Y OSCAR
 
   # --- Vector store (Postgres + pgvector, local y gratuito) ---
   vectorstore:

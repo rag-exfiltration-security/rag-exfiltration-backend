@@ -17,8 +17,7 @@ public enum ClassificationLevel {
 
     /**
      * Interpreta el valor de clasificacion escrito en el front matter de un
-     * documento del corpus (ver CorpusFrontMatterParser), sin distinguir
-     * mayusculas ni tildes.
+     * documento del corpus.
      */
     public static ClassificationLevel fromLabel(String label) {
         if (label == null) {

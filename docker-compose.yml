@@ -21,13 +21,13 @@ services:
     volumes:
       - rag_ollama_data:/root/.ollama
     # Si hay GPU NVIDIA disponible, descomentar para acelerar la inferencia:
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 volumes:
   rag_postgres_data:

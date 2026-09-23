@@ -8,9 +8,8 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 /**
- * Lee el encabezado de metadatos que llevan los archivos del corpus, con
- * un formato deliberadamente simple para no depender de una libreria de
- * YAML solo para esto. El formato esperado es:
+ * Lee el encabezado de metadatos que llevan los archivos del corpus, 
+ * El formato esperado es:
  *
  * <pre>
  * ---

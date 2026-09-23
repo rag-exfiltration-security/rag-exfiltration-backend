@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 /**
+ * AAA
  * Una linea del log de auditoria: quien pregunto, que fragmentos se
  * recuperaron para responderle (con su clasificacion) y que respondio el
  * modelo. Es el insumo crudo para las evidencias del Avance 1 y, mas
