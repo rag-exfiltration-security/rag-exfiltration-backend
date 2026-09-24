@@ -251,31 +251,52 @@ El informe documenta siete problemas de seguridad, cada uno con fuente primaria,
 
 Las cifras centrales del informe (Qi et al. 2024, IBM Cost of a Data Breach 2025 y el comunicado de Gartner) fueron contrastadas directamente contra sus fuentes primarias y se confirmaron como exactas. El propio informe señala con transparencia sus cifras de menor respaldo, como el 69% atribuido a Gartner sobre uso de GenAI no autorizada, verificado solo a través de una fuente secundaria.
 
+**¿En qué empresas y sistemas reales se basó cada problema?**
+
+Cada uno de los siete problemas está respaldado por una muestra concreta de organizaciones o sistemas atacados/encuestados, no por una afirmación genérica. Esta es la base empresarial/muestral que documenta el informe completo:
+
+| # | Problema | Empresas / sistemas base |
+|---|---|---|
+| 1 | Inyección de instrucciones (vector #1) | 25 GPTs de producción de **OpenAI** (dominios de ciberseguridad, derecho, finanzas, medicina y religión) + 9 LLM open-source (Llama2, Mistral, Mixtral, Vicuna, SOLAR, WizardLM, Qwen1.5, Platypus2), atacados por investigadores de **Harvard, Carnegie Mellon University y MBZUAI** (Qi et al., 2024) |
+| 2 | Exfiltración escala con tamaño del corpus | Sistemas RAG construidos con la técnica **Retrieval-In-Context (RIC)**, el mismo patrón que usa LangChain4j en este proyecto; mismo estudio de Qi et al. (2024) |
+| 3 | Brechas de datos ligadas a IA generativa | **600 organizaciones** con brecha de datos confirmada entre marzo de 2024 y febrero de 2025, en 16 sectores industriales y 17 países (**IBM Security / Ponemon Institute, 2025**) |
+| 4 | Ausencia de gobernanza de IA | Las mismas 600 organizaciones de **IBM/Ponemon (2025)**, con cifras del mismo orden confirmadas de forma independiente por encuestas de **Salesforce** (Workforce AI Survey, 2026) y **Gartner** (AI Governance Survey, 2026) |
+| 5 | Shadow AI (fuga por empleados) | **UpGuard**: 1.500 líderes de seguridad y empleados encuestados en EE. UU., Reino Unido, Canadá, Australia, Nueva Zelanda, Singapur e India (State of Shadow AI Report 2025); **Cyberhaven**: telemetría real (no encuesta) de tráfico corporativo hacia herramientas de IA generativa (AI Adoption and Risk Report 2025); **Menlo Security**: telemetría de tráfico web agregado |
+| 6 | Control de acceso roto (causa raíz) | Transversal a cualquier sistema con datos de distinta sensibilidad; marco **OWASP Foundation** (OWASP Top 10:2021 y OWASP Top 10 for LLM Applications 2025, sobre bases de datos vectoriales multiusuario) y el estudio académico *"SoK: Privacy Risks and Mitigations in Retrieval-Augmented Generation Systems"* (2026) |
+| 7 | Brecha adopción vs. gobernanza | Encuestas de clientes empresariales de **Gartner** y de **LayerX** (*Enterprise AI and SaaS Data Security Report 2025*, basado en telemetría real de navegador, no solo encuesta); síntesis adicional de **Vectra AI** (2026) |
+
+Ninguna de estas organizaciones corresponde a NovaTech Andina ni a datos internos del proyecto: son las fuentes externas verificables que sustentan cada hallazgo. El detalle completo por fuente (metodología, tamaño de muestra, año, enlace y limitaciones declaradas) está en el informe: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx).
+
 ## 💰 Análisis de costos y riesgos económicos
 
 Como complemento al risk register, el equipo elaboró un informe técnico que estima el costo económico de los riesgos y de cada componente de la arquitectura a lo largo de los tres avances. Sigue el enfoque de NIST SP 800-30 y calcula la pérdida anualizada esperada como `ALE = SLE × ARO`, donde SLE es el costo de un solo evento y ARO es cuántas veces se espera que ocurra por año.
 
-> 📎 Informe completo: [`docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx`](docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx)
+> 📎 Informe completo: [`docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx`](docs/cost/analisis-costos-riesgos-rag.md)
 
 **Resumen**
 
-El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09). Es una base de cálculo académica y no un presupuesto: donde faltan datos reales entrega fórmulas con variables explícitas para que el equipo las complete con sus mediciones.
+El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09) con cifras absolutas en USD/COP, no solo con fórmulas. Modela el proyecto como si estuviera en producción en la organización ficticia que ya usan los documentos del corpus (NovaTech Andina), usando como anclas de "valor en riesgo" los propios datos internos (presupuesto de COP 4.200 M y oferta de adquisición de COP 8.500 M) y evidencia externa verificable para todo lo demás: IBM *Cost of a Data Breach Report 2025*, Qi et al. (2024), GitGuardian *State of Secrets Sprawl 2026*, precios oficiales de AWS KMS/Secrets Manager, Render y Anthropic, y sanciones reales de la Superintendencia de Industria y Comercio (SIC) por infracción a la Ley 1581 de 2012.
 
-1. **Aún no hay cifras absolutas.** Ningún riesgo tiene un costo calculado, porque faltan variables que el proyecto todavía no mide: tasa de ocurrencia, valor asignado a cada nivel de clasificación, tiempos de respuesta y política de retención de logs.
-2. **Los riesgos de mayor alcance no están cubiertos por las tres fases.** R-05 (inversión de incrustaciones) compromete el corpus completo y R-09 (logs con información sensible) duplica lo que un ataque logre exfiltrar. Ambos requieren cifrado en reposo, control de acceso a la base de datos, y una política de retención y acceso para los logs.
-3. **El Avance 2 es determinístico y el Avance 3 no.** El filtrado en la recuperación cierra R-01 y R-02. La inyección de instrucciones (R-03) solo se reduce de forma probabilística: en el estudio de Qi et al. (2024) las mitigaciones más efectivas bajan la reconstrucción de 88,9% a 52,3%, por lo que el riesgo residual debe presupuestarse.
-4. **El validador del Avance 3 tiene un costo computacional propio.** Si usa una segunda inferencia del LLM, el cómputo por consulta se duplica aproximadamente.
-5. **Ollama local evita el costo por token, pero implica un costo fijo de infraestructura.** Cuál opción conviene depende del volumen real de consultas.
+| Riesgo | Costo por incidente (SLE) | Pérdida anual esperada (ALE) | Costo de mitigación | Riesgo residual/año |
+|---|---|---|---|---|
+| R-01 — Consulta directa | USD 12.119 | USD 18.179 | USD 1.036 | USD 2.727 |
+| R-02 — Reformulación evasiva | USD 12.464 | USD 18.697 | USD 259 | USD 2.805 |
+| R-03 — Inyección de instrucciones | USD 4.500 | USD 3.375 | USD 878 | USD 1.013 |
+| R-04 — Envenenamiento del vector store | USD 864 | USD 216 | USD 345 | USD 86 |
+| R-05 — Inversión de embeddings | USD 1.037 | USD 259 | USD 357 | USD 104 |
+| R-08 — Exposición de credenciales | USD 283 | USD 42 | USD 110 | USD 4 |
+| R-09 — Logs con fragmentos sensibles | USD 6.059 | USD 4.545 | USD 345 | USD 1.364 |
+| **Total** | — | **USD 45.313/año** | **USD 3.330** | **USD 8.103/año** |
 
-| Avance | Mitigación directa | Cómputo adicional | Riesgo residual |
-|---|---|---|---|
-| **1. Sin filtrado** | Ninguna | Línea base | Todos los riesgos abiertos |
-| **2. Filtrado en recuperación** | R-01 y R-02 | Marginal | Depende de la tasa de falsos negativos del filtro, aún no medida |
-| **3. Prompt y validación** | R-01 y R-02, con R-03 parcial | Hasta ≈2× | ≈52,3% de reconstrucción según Qi et al., en condiciones distintas a las del proyecto |
+1. **R-01 y R-02 concentran casi el 82% de la pérdida anual esperada**, porque ambos comparten el mismo activo de máximo impacto: el documento SECRETO del plan de adquisición (COP 8.500 M). El "escenario alto" de ambos supera los USD 293.000 si la fuga ocurre antes del cierre de la negociación.
+2. **El filtrado por rol/clasificación del Avance 2 es, con mucha diferencia, el control de mayor retorno.** Cierra R-01 y R-02 con un costo conjunto de ≈USD 950 y evita ≈USD 31.000/año en pérdida esperada combinada (ROI de cuatro cifras).
+3. **R-04, R-05 y R-08 dan ROI negativo sobre el promedio, pero no por eso son prescindibles.** Su ARO anual es bajo, pero su "escenario alto" sigue valiendo decenas o cientos de miles de dólares — es la firma típica de un riesgo de baja frecuencia y alto impacto; el criterio correcto no es el ROI esperado sino comparar el costo de mitigar (USD 110–357) contra la pérdida máxima razonable.
+4. **El Avance 3 (validación de la respuesta) reduce R-03 solo de forma probabilística.** En el estudio de Qi et al. (2024) las mitigaciones más efectivas bajan la reconstrucción de 88,9% a 52,3%, por lo que su riesgo residual anual (USD 1.013) nunca llega a cero en el modelo.
+5. **Ollama local evita el costo por token**, pero la validación en dos pasos del Avance 3 implica un sobrecosto de cómputo estimado en ≈USD 360/año (upgrade de plan de hosting).
 
-El informe también propone las métricas a recopilar durante las pruebas y un flujo de cuatro pasos para convertirlas en costos: calcular el SLE, estimar el ARO con los resultados del Red Team, calcular el ALE y repetir el cálculo tras cada avance para obtener la curva de riesgo residual frente a la inversión en controles.
+**Supuestos clave declarados** (ver el detalle completo con fórmulas en el informe): tasa de cambio COP 3.150/USD; tarifa de ingeniería cargada COP 68.000/hora (Coderhouse, 2026, con recargo prestacional del 50%); organización modelada de ~300 empleados; costo por registro de dato personal comprometido USD 160 (IBM 2025); probabilidad de sanción SIC del 15% tras un incidente confirmado, con monto tomado de la mediana de sanciones reales (COP 240 M, rango COP 83 M–496 M).
 
-**Limitaciones declaradas:** el análisis se hizo con los siete riesgos descritos en este README, por lo que queda pendiente una segunda pasada con el contenido de [`risk-register.md`](risk-register.md). Los precios de proveedores (Vercel, Render, Anthropic) corresponden a septiembre de 2026 y deben verificarse antes de usarse en un documento final.
+**Limitaciones declaradas:** el análisis se hizo con los siete riesgos descritos en este README y en `risk-register.md`. El tamaño de la organización (300 empleados) y la probabilidad de sanción SIC (15%) son supuestos explícitos del equipo, no cifras publicadas, y deben ajustarse si se cuenta con datos internos reales. Los precios de proveedores (AWS, Render, Anthropic) corresponden a septiembre de 2026 y deben reverificarse antes de usarse en un documento final. **Nota:** esta tabla resume el cálculo cuantificado más reciente del equipo; el archivo `docs/cost/RAG_Exfiltration_Analisis_Costos_Riesgos.docx` enlazado arriba aún corresponde a una versión previa, únicamente con fórmulas (sin cifras absolutas), y está pendiente de actualizarse para que coincida con esta tabla.
 
 ## 📚 Referencias
 
