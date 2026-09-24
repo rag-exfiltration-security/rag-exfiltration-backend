@@ -195,7 +195,7 @@ El proyecto se reparte en dos repositorios. Este, `rag-exfiltration-backend`, co
 │   ├── marco-teorico/             # Paper base y referencias del proyecto
 │   │   └── Exfiltracion_RAG_Marco_Teorico.pdf
 │   ├── estadisticas/              # Informe de evidencia estadística de riesgos RAG/LLM
-│   │   └── RAG_Exfiltration_Riesgos_Informe.docx
+│   │   └── RAG_Exfiltration_Riesgos_Informe.pdf
 │   ├── cost/                      # Análisis de costos y riesgos económicos
 │   │   └── RAG_Exfiltration_Analisis_Costos_Riesgos.docx
 │   └── diagrams/
@@ -235,7 +235,7 @@ Las evidencias de las pruebas de exfiltración, el código del sistema RAG y los
 
 Como complemento al marco teórico y al risk register, el equipo elaboró un informe de investigación que reúne evidencia estadística verificable sobre los riesgos de exfiltración de datos en sistemas RAG y LLM, conectando cada hallazgo con los mecanismos que este proyecto demuestra.
 
-> 📎 Informe completo: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx)
+> 📎 Informe completo: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf)
 
 **Resumen**
 
@@ -265,7 +265,7 @@ Cada uno de los siete problemas está respaldado por una muestra concreta de org
 | 6 | Control de acceso roto (causa raíz) | Transversal a cualquier sistema con datos de distinta sensibilidad; marco **OWASP Foundation** (OWASP Top 10:2021 y OWASP Top 10 for LLM Applications 2025, sobre bases de datos vectoriales multiusuario) y el estudio académico *"SoK: Privacy Risks and Mitigations in Retrieval-Augmented Generation Systems"* (2026) |
 | 7 | Brecha adopción vs. gobernanza | Encuestas de clientes empresariales de **Gartner** y de **LayerX** (*Enterprise AI and SaaS Data Security Report 2025*, basado en telemetría real de navegador, no solo encuesta); síntesis adicional de **Vectra AI** (2026) |
 
-Ninguna de estas organizaciones corresponde a NovaTech Andina ni a datos internos del proyecto: son las fuentes externas verificables que sustentan cada hallazgo. El detalle completo por fuente (metodología, tamaño de muestra, año, enlace y limitaciones declaradas) está en el informe: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx).
+Ninguna de estas organizaciones corresponde a NovaTech Andina ni a datos internos del proyecto: son las fuentes externas verificables que sustentan cada hallazgo. El detalle completo por fuente (metodología, tamaño de muestra, año, enlace y limitaciones declaradas) está en el informe: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf).
 
 ## 💰 Análisis de costos y riesgos económicos
 
@@ -300,7 +300,7 @@ El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09) con
 
 ## 📚 Referencias
 
-Ver la lista completa de referencias en el documento del marco teórico: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.docx).
+Ver la lista completa de referencias en el documento del marco teórico: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf).
 
 ## ✅ Conclusiones
 
