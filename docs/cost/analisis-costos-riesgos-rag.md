@@ -5,7 +5,7 @@
 
 ## 0. Supuestos base y método
 
-El repositorio es un prototipo académico con un corpus sintético de 5 documentos. Para producir cifras monetarias defendibles (como exige el ejercicio) en lugar de una metodología abstracta, este informe modela el escenario **como si el sistema estuviera en producción** en la organización ficticia que ya usan los propios documentos del corpus — **NovaTech Andina** — manteniendo los valores internos reales que el equipo ya definió (presupuesto de COP 4.200 M y oferta de adquisición de COP 8.500 M) como anclas de "valor en riesgo", y usando evidencia externa verificable para todo lo demás. Se usa el enfoque SLE/ARO/ALE (NIST SP 800-30), ya adoptado por el propio equipo en `docs/cost`.
+El repositorio es un prototipo académico con un corpus sintético de 5 documentos. Para producir cifras monetarias defendibles (como exige el ejercicio) en lugar de una metodología abstracta, este informe modela el escenario **como si el sistema estuviera en producción** en la organización ficticia que ya usan los propios documentos del corpus — **Syntrix** — manteniendo los valores internos reales que el equipo ya definió (presupuesto de COP 4.200 M y oferta de adquisición de COP 8.500 M) como anclas de "valor en riesgo", y usando evidencia externa verificable para todo lo demás. Se usa el enfoque SLE/ARO/ALE (NIST SP 800-30), ya adoptado por el propio equipo en `docs/cost`.
 
 **Supuestos numerados (todos declarados explícitamente; se reutilizan en todos los riesgos):**
 

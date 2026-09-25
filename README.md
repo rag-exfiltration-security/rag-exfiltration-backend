@@ -290,7 +290,7 @@ Cada uno de los siete problemas está respaldado por una muestra concreta de org
 | 6 | Control de acceso roto (causa raíz) | Transversal a cualquier sistema con datos de distinta sensibilidad; marco **OWASP Foundation** (OWASP Top 10:2021 y OWASP Top 10 for LLM Applications 2025, sobre bases de datos vectoriales multiusuario) y el estudio académico *"SoK: Privacy Risks and Mitigations in Retrieval-Augmented Generation Systems"* (2026) |
 | 7 | Brecha adopción vs. gobernanza | Encuestas de clientes empresariales de **Gartner** y de **LayerX** (*Enterprise AI and SaaS Data Security Report 2025*, basado en telemetría real de navegador, no solo encuesta); síntesis adicional de **Vectra AI** (2026) |
 
-Ninguna de estas organizaciones corresponde a NovaTech Andina ni a datos internos del proyecto: son las fuentes externas verificables que sustentan cada hallazgo. El detalle completo por fuente (metodología, tamaño de muestra, año, enlace y limitaciones declaradas) está en el informe: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf).
+Ninguna de estas organizaciones corresponde a Syntrix ni a datos internos del proyecto: son las fuentes externas verificables que sustentan cada hallazgo. El detalle completo por fuente (metodología, tamaño de muestra, año, enlace y limitaciones declaradas) está en el informe: [`docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf`](docs/estadisticas/RAG_Exfiltration_Riesgos_Informe.pdf).
 
 ## 💰 Análisis de costos y riesgos económicos
 
@@ -300,7 +300,7 @@ Como complemento al risk register, el equipo elaboró un informe técnico que es
 
 **Resumen**
 
-El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09) con cifras absolutas en USD/COP, no solo con fórmulas. Modela el proyecto como si estuviera en producción en la organización ficticia que ya usan los documentos del corpus (NovaTech Andina), usando como anclas de "valor en riesgo" los propios datos internos (presupuesto de COP 4.200 M y oferta de adquisición de COP 8.500 M) y evidencia externa verificable para todo lo demás: IBM *Cost of a Data Breach Report 2025*, Qi et al. (2024), GitGuardian *State of Secrets Sprawl 2026*, precios oficiales de AWS KMS/Secrets Manager, Render y Anthropic, y sanciones reales de la Superintendencia de Industria y Comercio (SIC) por infracción a la Ley 1581 de 2012.
+El informe analiza siete riesgos (R-01, R-02, R-03, R-04, R-05, R-08 y R-09) con cifras absolutas en USD/COP, no solo con fórmulas. Modela el proyecto como si estuviera en producción en la organización ficticia que ya usan los documentos del corpus (Syntrix), usando como anclas de "valor en riesgo" los propios datos internos (presupuesto de COP 4.200 M y oferta de adquisición de COP 8.500 M) y evidencia externa verificable para todo lo demás: IBM *Cost of a Data Breach Report 2025*, Qi et al. (2024), GitGuardian *State of Secrets Sprawl 2026*, precios oficiales de AWS KMS/Secrets Manager, Render y Anthropic, y sanciones reales de la Superintendencia de Industria y Comercio (SIC) por infracción a la Ley 1581 de 2012.
 
 | Riesgo | Costo por incidente (SLE) | Pérdida anual esperada (ALE) | Costo de mitigación | Riesgo residual/año |
 |---|---|---|---|---|
