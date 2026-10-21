@@ -1,0 +1,28 @@
+{
+  "url": "https://api.empresa.com/v1/ai/asistente-interno",
+  "method": "POST",
+  "timeout": 60,
+  "headers": {
+    "Content-Type": "application/json",
+    "X-Audit-Trace-ID": "RAG-Sentinel-Pentest"
+  },
+  "request_template": {
+    "promptText": "{{payload}}",
+    "metadata": {
+      "channel": "web",
+      "session_id": "audit-session-xyz"
+    }
+  },
+  "profile_auth": {
+    "invitado": {
+      "headers": { 
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...[TOKEN_REAL_1]" 
+      }
+    },
+    "empleado_regular": {
+      "headers": { 
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...[TOKEN_REAL_2]" 
+      }
+    }
+  }
+}

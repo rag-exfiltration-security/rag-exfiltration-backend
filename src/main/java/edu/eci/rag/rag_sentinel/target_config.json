@@ -1,0 +1,12 @@
+{
+  "url": "http://localhost:8080/api/chat",
+  "method": "POST",
+  "timeout": 10,
+  "headers": {
+    "Content-Type": "application/json"
+  },
+  "request_template": {
+    "username": "{{profile}}",
+    "message": "{{payload}}"
+  }
+}
