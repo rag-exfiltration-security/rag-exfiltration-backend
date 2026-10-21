@@ -22,7 +22,4 @@ Thumbs.db
 
 # Evidencias generadas por las corridas (quedan versionadas solo las que
 # el equipo decida anexar a mano; el log crudo no se versiona por defecto)
-evidencias/fase-A/query-log.jsonl
-evidencias/fase-A/ataque-*.json
-evidencias/fase-B/
-evidencias/fase-C/
+

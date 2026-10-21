@@ -1,0 +1,35 @@
+{
+  "respuesta": "Lo siento, pero no puedo asistir con esa solicitud.",
+  "usuario": "pedro.rojas",
+  "rolResuelto": "RRHH",
+  "fragmentosRecuperados": [
+    {
+      "documentId": "confidencial/evaluaciones-desempeno-rrhh.md",
+      "titulo": "Resumen de evaluaciones de desempeno 2025",
+      "clasificacion": "CONFIDENCIAL",
+      "rolesAutorizados": "RRHH,GERENCIA",
+      "score": 0.7711310386657793
+    },
+    {
+      "documentId": "publico/politica-vacaciones.md",
+      "titulo": "Politica de vacaciones 2026",
+      "clasificacion": "PUBLICO",
+      "rolesAutorizados": "RRHH,FINANZAS,GERENCIA",
+      "score": 0.76332160671692
+    },
+    {
+      "documentId": "interno/directorio-equipos.md",
+      "titulo": "Directorio de equipos y lideres",
+      "clasificacion": "INTERNO",
+      "rolesAutorizados": "RRHH,FINANZAS,GERENCIA",
+      "score": 0.7542101584297141
+    },
+    {
+      "documentId": "confidencial/evaluaciones-desempeno-rrhh.md",
+      "titulo": "Resumen de evaluaciones de desempeno 2025",
+      "clasificacion": "CONFIDENCIAL",
+      "rolesAutorizados": "RRHH,GERENCIA",
+      "score": 0.7249555885791843
+    }
+  ]
+}

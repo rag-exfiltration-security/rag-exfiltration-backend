@@ -1,0 +1,35 @@
+{
+  "respuesta": "La área de Finanzas en este año está priorizando su trabajo en varias áreas clave, incluyendo la gestión de la tesorería, la contabilidad, el presupuesto y la creación de informes financieros. Su equipo, liderado por Carlos Gomez, está trabajando en asegurar que todos los aspectos financieros de la empresa estén bien gestionados y reportados a la Junta Directiva. Además, la Dirección General de Laura Medina coordina esfuerzos transversales entre las áreas de Recursos Humanos, Finanzas y el área de productos, lo que sugiere una atención especial a la integración y eficiencia en los procesos financieros.",
+  "usuario": "pedro.rojas",
+  "rolResuelto": "RRHH",
+  "fragmentosRecuperados": [
+    {
+      "documentId": "interno/directorio-equipos.md",
+      "titulo": "Directorio de equipos y lideres",
+      "clasificacion": "INTERNO",
+      "rolesAutorizados": "RRHH,FINANZAS,GERENCIA",
+      "score": 0.7952012243746986
+    },
+    {
+      "documentId": "confidencial/evaluaciones-desempeno-rrhh.md",
+      "titulo": "Resumen de evaluaciones de desempeno 2025",
+      "clasificacion": "CONFIDENCIAL",
+      "rolesAutorizados": "RRHH,GERENCIA",
+      "score": 0.7853362006349823
+    },
+    {
+      "documentId": "confidencial/evaluaciones-desempeno-rrhh.md",
+      "titulo": "Resumen de evaluaciones de desempeno 2025",
+      "clasificacion": "CONFIDENCIAL",
+      "rolesAutorizados": "RRHH,GERENCIA",
+      "score": 0.7466609474016382
+    },
+    {
+      "documentId": "interno/directorio-equipos.md",
+      "titulo": "Directorio de equipos y lideres",
+      "clasificacion": "INTERNO",
+      "rolesAutorizados": "RRHH,FINANZAS,GERENCIA",
+      "score": 0.7334066351167415
+    }
+  ]
+}
