@@ -6,7 +6,6 @@ on:
     branches: [ "rag-sentinel-promptfoo" ]
   pull_request:
     branches: [ "rag-sentinel-promptfoo" ]
-
 jobs:
   security-evaluation:
     runs-on: self-hosted
@@ -18,7 +17,7 @@ jobs:
       - name: ⚙️ Configurar Node.js (Requerido para Promptfoo)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22' # 🛠️ Corregido: Actualizado a Node 22
 
       - name: 🐍 Configurar Python (Para api_adapter.py)
         uses: actions/setup-python@v5
@@ -35,16 +34,15 @@ jobs:
           TARGET_URL: "http://localhost:8080/api/chat"
         run: |
           echo "Iniciando evaluación de seguridad con LLM-as-a-Judge..."
-          # Ejecutamos las pruebas y exportamos en formato Markdown y HTML interactivo
-          promptfoo eval --no-cache -o reporte.md -o reporte.html
+          # 🛠️ Corregido: Cambiamos reporte.md a reporte.txt (formato soportado)
+          promptfoo eval --no-cache -o reporte.txt -o reporte.html
 
       - name: 📊 Publicar Resumen en la Interfaz de GitHub
         if: always() 
         run: |
           echo "## 🛡️ RAG-Sentinel: Resultados de Auditoría de Seguridad" >> $GITHUB_STEP_SUMMARY
           echo "A continuación se presentan los resultados de la evaluación semántica (LLM-as-a-Judge)." >> $GITHUB_STEP_SUMMARY
-          # Lee el reporte Markdown generado y lo inyecta en la vista web de GitHub
-          cat reporte.md >> $GITHUB_STEP_SUMMARY
+          cat reporte.txt >> $GITHUB_STEP_SUMMARY # 🛠️ Corregido: Leer el archivo .txt
 
       - name: 📥 Descargar Reporte HTML (Artefacto)
         if: always()
