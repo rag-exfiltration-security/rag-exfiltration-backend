@@ -3,9 +3,9 @@ name: RAG-Sentinel Security Audit
 # El pipeline se ejecuta cada vez que haces un push o un pull request a la rama main
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "rag-sentinel-promptfoo" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "rag-sentinel-promptfoo" ]
 
 jobs:
   security-evaluation:
