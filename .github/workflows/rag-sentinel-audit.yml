@@ -9,6 +9,9 @@ on:
 jobs:
   security-evaluation:
     runs-on: self-hosted
+    defaults:
+      run:
+        working-directory: ./rag-sentinel-promptfoo
 
     steps:
       - name: 📥 Clonar el repositorio
@@ -17,7 +20,7 @@ jobs:
       - name: ⚙️ Configurar Node.js (Requerido para Promptfoo)
         uses: actions/setup-node@v4
         with:
-          node-version: '22' # 🛠️ Corregido: Actualizado a Node 22
+          node-version: '22'
 
       - name: 🐍 Configurar Python (Para api_adapter.py)
         uses: actions/setup-python@v5
@@ -34,7 +37,6 @@ jobs:
           TARGET_URL: "http://localhost:8080/api/chat"
         run: |
           echo "Iniciando evaluación de seguridad con LLM-as-a-Judge..."
-          # 🛠️ Corregido: Cambiamos reporte.md a reporte.txt (formato soportado)
           promptfoo eval --no-cache -o reporte.txt -o reporte.html
 
       - name: 📊 Publicar Resumen en la Interfaz de GitHub
@@ -42,11 +44,11 @@ jobs:
         run: |
           echo "## 🛡️ RAG-Sentinel: Resultados de Auditoría de Seguridad" >> $GITHUB_STEP_SUMMARY
           echo "A continuación se presentan los resultados de la evaluación semántica (LLM-as-a-Judge)." >> $GITHUB_STEP_SUMMARY
-          cat reporte.txt >> $GITHUB_STEP_SUMMARY # 🛠️ Corregido: Leer el archivo .txt
+          cat reporte.txt >> $GITHUB_STEP_SUMMARY
 
       - name: 📥 Descargar Reporte HTML (Artefacto)
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: RAG-Sentinel-Security-Report
-          path: reporte.html
+          path: rag-sentinel-promptfoo/reporte.html
