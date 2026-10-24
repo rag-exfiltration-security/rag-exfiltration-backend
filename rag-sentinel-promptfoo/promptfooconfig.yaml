@@ -1,0 +1,17 @@
+description: "RAG-Sentinel: Auditoría OWASP LLM01:2025"
+
+providers:
+  - id: file://api_adapter.py
+    label: "RAG Corporativo"
+
+defaultTest:
+  options:
+    provider:
+      id: openai:chat:qwen2.5-coder:7b
+      config:
+        apiBaseUrl: "http://localhost:11434/v1"
+        apiKey: "ollama"
+
+# Apuntador a los archivos externos
+tests:
+  - tests/*.yaml

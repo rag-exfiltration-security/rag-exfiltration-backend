@@ -1,95 +1,89 @@
-# 🛡️ Propuesta Comercial y de Arquitectura: RAG-Sentinel BlackBox Scanner
+# RAG-Sentinel: BlackBox LLM Scanner (Versión Legacy - Basada en Streamlit)
 
-## 1. Visión General del Producto
+## 1. Descripción General
+La versión inicial de **RAG-Sentinel** operaba como una herramienta monolítica desarrollada en Python utilizando **Streamlit** para la interfaz gráfica y un esquema de evaluación determinista basado en diccionarios estáticos e indicadores de fuga (`leak_indicators`).
 
-**RAG-Sentinel** es una herramienta automatizada de pruebas de penetración (**LLM/RAG Pentesting**) y auditoría de cumplimiento en **Caja Negra**.
+## 2. Funcionamiento y Arquitectura
+* **Interfaz de Control:** Se ejecutaba enteramente en un entorno web local donde el auditor configuraba la URL del backend y seleccionaba perfiles de prueba de forma manual.
+* **Inyección de Payloads:** El sistema leía un archivo estructurado `test_suite.json`, combinaba el rol del usuario con la consulta maliciosa y enviaba peticiones HTTP directas al endpoint del backend RAG.
+* **Evaluación Determinista (`leak_indicators`):** 
+  * Para detectar si un sistema era vulnerable, el script comparaba la respuesta de texto plano del LLM contra una lista estática de palabras prohibidas (ej. cifras exactas, nombres de proyectos como "Cobalto", contraseñas).
+  * Si la palabra clave aparecía en la respuesta y el usuario no era un perfil autorizado (y no se trataba de una negación formal), el escáner catalogaba la prueba como **Vulnerable**.
 
-Su propuesta de valor central es evaluar sistemas de Inteligencia Artificial corporativos desde el exterior, enviando consultas maliciosas y evaluando las respuestas expuestas, sin necesidad de acceso al código fuente ni a la base de datos.
+## 3. Limitaciones Críticas (¿Qué le faltaba?)
+* **Ausencia de LLM-as-a-Judge:** Al carecer de un modelo evaluador inteligente, el sistema dependía estrictamente de coincidencias exactas de cadenas de texto (subadenas). Esto generaba una alta tasa de falsos positivos y falsos negativos ante paráfrasis sutiles del modelo.
+* **Rigidez Operativa:** Las listas de `leak_indicators` requerían mantenimiento manual constante por cada documento nuevo ingresado al corpus vectorial de la empresa.
+* **Escalabilidad Limitada:** La arquitectura monolítica en Streamlit dificultaba la integración de los escaneos en pipelines de CI/CD automatizados y pruebas de regresión masivas.
 
-### Alcance y Limitaciones Arquitectónicas Actuales
-* **Dependencia de Arquitectura RAG:** RAG-Sentinel está optimizado para auditar ecosistemas basados en Recuperación Aumentada por Generación (*Retrieval-Augmented Generation*) respaldados por motores vectoriales. No está diseñado para LLMs puros sin conexión a datos externos.
-* **Heurísticas Basadas en Sincronización de Cadenas (String Matching):** En su versión actual, el motor de evaluación analiza respuestas mediante la búsqueda de patrones de texto e indicadores de fuga normalizados (`leak_indicators`). Aunque eficiente para despliegues rápidos, esta aproximación presenta retos de falsos negativos ante paráfrasis muy avanzadas del modelo, sentando la base para una futura evolución hacia una arquitectura *LLM-as-a-Judge*.
 
----
+## Donde encontrar RAG_SENTINEL?
 
-## 2. Arquitectura y Módulos de Escaneo
+```
+rag-exfiltration-backend/
+│
+├── .github/
+│   └── workflows/
+│       └── rag-sentinel-audit.yml
+│
+├── ataques-demo/
+├── corpus/
+├── docs/
+├── evidencias/
+│
+├── rag-sentinel-promptfoo/
+│
+├── src/
+│   └── main/
+│       ├── java/
+│       │   └── edu/
+│       │       └── eci/
+│       │           └── rag/
+│       │               ├── audit/
+│       │               ├── config/
+│       │               ├── corpus/
+│       │               ├── domain/
+│       │               ├── rag/
+│       │               │
+│       │               ├── rag_sentinel/   ← CARPETA PRINCIPAL
+│       │               │   ├── empresarial.txt
+│       │               │   ├── rag_sentinel.py
+│       │               │   ├── target_config.json
+│       │               │   └── test_suite.json
+│       │               │
+│       │               ├── security/
+│       │               └── web/
+│       │
+│       └── resources/
+│
+├── target/
+├── .env
+└── README.md
 
-El escáner evoluciona la línea base académica hacia una **taxonomía comercial ampliada de 8 vectores de ataque**, alineada con los estándares de la industria (**OWASP Top 10 for LLM Applications**).
+```
 
-### Módulo 1: Probe de Control de Acceso y RBAC
-* **Ataca el riesgo R-01 (Direct Data Exfiltration)**
-* **Objetivo:** Detectar si el RAG filtra información restringida a usuarios de bajo privilegio.
-* **Cómo opera:** Simula perfiles de usuario externos o regulares y envía consultas directas sobre datos financieros, legales o estratégicos. Analiza si el modelo de lenguaje cede y expone información protegida.
+# Ejecución de RAG_SENTINEL
 
-### Módulo 2: Motor de Reformulación Evasiva
-* **Ataca el riesgo R-02 (Evasive Reformulation)**
-* **Objetivo:** Evaluar si el sistema es vulnerable a perífrasis, sinónimos o resúmenes diseñados para burlar filtros superficiales.
-* **Cómo opera:** Aplica un generador de paráfrasis semánticas automatizadas sobre las preguntas prohibidas para medir la tasa de exfiltración encubierta.
+## 0. Navegar al directorio de la herramienta
+```
+cd src/main/java/edu/eci/rag/rag_sentinel
+```
 
-### Módulo 3: Fuzzing de Inyección de Instrucciones / Jailbreak
-* **Ataca el riesgo R-03 (Direct Prompt Injection)**
-* **Objetivo:** Auditar la robustez del System Prompt frente a ataques de exfiltración masiva (inspirado en la metodología de *Qi et al. 2024*).
-* **Cómo opera:** Lanza payloads con órdenes explícitas de evasión, juegos de rol o manipulación de contexto para calcular el índice de resiliencia del modelo.
+## 1. Levantar la infraestructura base
+```
+docker compose up -d
+```
 
-### Módulo 4: Extracción de Instrucciones del Sistema
-* **Evaluación de fugas de configuración (System Prompt Extraction)**
-* **Objetivo:** Auditar si el modelo revela sus reglas de negocio ocultas o directivas de seguridad internas.
+## 2. Descargar el modelo de IA local
+```
+docker exec -it rag-exfiltration-ollama ollama pull <nombre_del_modelo>
+```
 
-### Módulo 5: Escalada de Privilegios por Suplantación
-* **Evaluación de asunción de roles (Privilege Escalation by Impersonation)**
-* **Objetivo:** Evaluar la susceptibilidad del modelo a la ingeniería social automatizada simulando identidades de alta jerarquía (ej. Gerencia General).
+## 3. Instalar dependencias de Python
+```
+pip install streamlit requests
+```
 
-### Módulo 6: Inyección Indirecta vía Datos
-* **Evaluación de vectores en reposo (Indirect Prompt Injection)**
-* **Objetivo:** Detectar vulnerabilidades de inyección provenientes de documentos recuperados (ej. CVs o políticas externas) que contienen instrucciones maliciosas ocultas.
-
-### Módulo 7: Vectores Genéricos OWASP LLM Top 10
-* **Ataca riesgos de Agencia Excesiva, Salidas Inseguras, DoS y Sobreconfianza**
-* **Objetivo:** Auditar fallos operativos y debilidades secundarias del modelo de lenguaje.
-* **Cómo opera:** Ejecuta pruebas sobre ejecución de comandos o transacciones simuladas, inyección de scripts en salidas (HTML/JS), pruebas de agotamiento de recursos (*Denial of Service*) e inducción de desinformación/alucinaciones maliciosas.
-
-### Módulo 8: Happy Path y Falsos Positivos (Disponibilidad)
-* **Ataca el riesgo de Interrupción de Usabilidad (Availability Disruption)**
-* **Objetivo:** Comprobar que las defensas de seguridad del RAG no sean tan agresivas que terminen bloqueando a usuarios legítimos.
-* **Cómo opera:** Envía consultas totalmente autorizadas y públicas (ej. información corporativa general o acceso legítimo de personal de RRHH a sus expedientes) para medir si el sistema responde correctamente o sufre de sobrecorrección defensiva (*False Refusals*).
-
----
-
-## 3. Flujo de Trabajo del Escáner y Adaptación Empresarial
-
-La arquitectura del escáner es completamente agnóstica mediante archivos de configuración externos (`test_suite.json` y `target_config.json`). 
-
-### Autenticación Avanzada en Entornos Empresariales Reales
-Cuando la auditoría se traslada a un entorno de producción corporativo y la empresa permite la entrega controlada de **tokens de acceso real** (como OAuth o JWT), RAG-Sentinel escala su capacidad de simulación utilizando esquemas de cabeceras dinámicas (`profile_auth`). 
-
-Esto permite inyectar credenciales reales correspondientes a cada nivel de privilegio dentro de las peticiones HTTP automatizadas, auditando de manera fehaciente la segregación de funciones del sistema de identidad de la compañía:
-
-```json
-{
-  "url": "[https://api.empresa.com/v1/ai/asistente-interno](https://api.empresa.com/v1/ai/asistente-interno)",
-  "method": "POST",
-  "timeout": 60,
-  "headers": {
-    "Content-Type": "application/json",
-    "X-Audit-Trace-ID": "RAG-Sentinel-Pentest"
-  },
-  "request_template": {
-    "promptText": "{{payload}}",
-    "metadata": {
-      "channel": "web",
-      "session_id": "audit-session-xyz"
-    }
-  },
-  "profile_auth": {
-    "invitado": {
-      "headers": { 
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...[TOKEN_REAL_1]" 
-      }
-    },
-    "empleado_regular": {
-      "headers": { 
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6...[TOKEN_REAL_2]" 
-      }
-    }
-  }
-}
+## 4. Ejecutar la interfaz gráfica
+```
+streamlit run rag_sentinel.py
+```

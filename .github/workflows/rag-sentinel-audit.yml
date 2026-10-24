@@ -1,0 +1,54 @@
+name: RAG-Sentinel Security Audit
+
+# El pipeline se ejecuta cada vez que haces un push o un pull request a la rama main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  security-evaluation:
+    runs-on: self-hosted
+
+    steps:
+      - name: 📥 Clonar el repositorio
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Node.js (Requerido para Promptfoo)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🐍 Configurar Python (Para api_adapter.py)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📦 Instalar dependencias
+        run: |
+          npm install -g promptfoo
+          pip install requests
+
+      - name: 🛡️ Ejecutar Auditoría RAG-Sentinel (OWASP Top 10)
+        env:
+          TARGET_URL: "http://localhost:8080/api/chat"
+        run: |
+          echo "Iniciando evaluación de seguridad con LLM-as-a-Judge..."
+          # Ejecutamos las pruebas y exportamos en formato Markdown y HTML interactivo
+          promptfoo eval --no-cache -o reporte.md -o reporte.html
+
+      - name: 📊 Publicar Resumen en la Interfaz de GitHub
+        if: always() 
+        run: |
+          echo "## 🛡️ RAG-Sentinel: Resultados de Auditoría de Seguridad" >> $GITHUB_STEP_SUMMARY
+          echo "A continuación se presentan los resultados de la evaluación semántica (LLM-as-a-Judge)." >> $GITHUB_STEP_SUMMARY
+          # Lee el reporte Markdown generado y lo inyecta en la vista web de GitHub
+          cat reporte.md >> $GITHUB_STEP_SUMMARY
+
+      - name: 📥 Descargar Reporte HTML (Artefacto)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RAG-Sentinel-Security-Report
+          path: reporte.html

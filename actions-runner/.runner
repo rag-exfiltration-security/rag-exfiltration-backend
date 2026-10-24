@@ -1,0 +1,11 @@
+﻿{
+  "agentId": 2,
+  "agentName": "ZEPHYRUS9778",
+  "poolId": 1,
+  "poolName": "Default",
+  "serverUrl": "https://pipelinesghubeus8.actions.githubusercontent.com/4WBo1Oac89MUjqKDRX5iC7bL1tu95OJrr5yEoav0c3Px6XxykN/",
+  "gitHubUrl": "https://github.com/rag-exfiltration-security/rag-exfiltration-backend",
+  "workFolder": "_work",
+  "useV2Flow": true,
+  "serverUrlV2": "https://broker.actions.githubusercontent.com/"
+}

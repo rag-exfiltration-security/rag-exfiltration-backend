@@ -111,3 +111,7 @@ Todas tienen un valor por defecto razonable para correr todo en local con
 | `RAG_CORPUS_PATH`             | `corpus`                      | Carpeta del corpus de prueba                  |
 | `RAG_TOP_K`                   | `4`                           | Fragmentos recuperados por pregunta           |
 | `RAG_AUDIT_LOG_FILE`          | `evidencias/fase-A/query-log.jsonl` | Archivo de auditoria de las pruebas    |
+
+
+
+
